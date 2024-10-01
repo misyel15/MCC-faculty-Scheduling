@@ -1,13 +1,12 @@
 <?php
 // Database connection variables
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "scheduling_db";
+$MySQL_username = 'u510162695_scheduling_db';
+$Password = '1Scheduling_db';
+$MySQL_database_name = 'u510162695_scheduling_db';
 
 try {
   // Create a PDO instance and connect to the database
-  $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+  $conn = new PDO('localhost', $MySQL_username, $Password, $MySQL_database_name);
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
   // SQL query to retrieve data from the database
