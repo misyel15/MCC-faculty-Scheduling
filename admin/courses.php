@@ -1,5 +1,12 @@
-<?php include('db_connect.php');?>
-<?php include 'includes/header.php'; ?>
+<?php
+session_start();
+include('db_connect.php');
+include 'includes/header.php';
+
+// Assuming you store the department ID in the session during login
+// Example: $_SESSION['dept_id'] = $user['dept_id'];
+$dept_id = $_SESSION['dept_id']; // Get the department ID from the session
+?>
 
 <!-- Include SweetAlert CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -15,7 +22,7 @@
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
 
-<div class="container-fluid"  style="margin-top:100px;">
+<div class="container-fluid" style="margin-top:100px;">
     <div class="col-lg-14">
         <div class="row">
             <!-- Table Panel -->
@@ -40,8 +47,8 @@
                                 <tbody>
                                     <?php 
                                     $i = 1;
-                                    $course = $conn->query("SELECT * FROM courses ORDER BY id ASC");
-                                    while($row=$course->fetch_assoc()):
+                                    $course = $conn->query("SELECT * FROM courses WHERE dept_id = '$dept_id' ORDER BY id ASC");
+                                    while($row = $course->fetch_assoc()):
                                     ?>
                                     <tr>
                                         <td class="text-center"><?php echo $i++ ?></td>
@@ -80,13 +87,14 @@
                         <form action="" id="manage-course">
                             <div class="modal-body">
                                 <input type="hidden" name="id">
+                                <input type="hidden" name="dept_id" value="<?php echo $dept_id; ?>">
                                 <div class="form-group">
                                     <label class="control-label">Course</label>
-                                    <input type="text" class="form-control" name="course">
+                                    <input type="text" class="form-control" name="course" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label">Description</label>
-                                    <textarea class="form-control" cols="30" rows='3' name="description"></textarea>
+                                    <textarea class="form-control" cols="30" rows='3' name="description" required></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -138,7 +146,6 @@
             contentType: false,
             processData: false,
             method: 'POST',
-            type: 'POST',
             success: function(resp) {
                 if (resp == 1) {
                     Swal.fire({
@@ -171,13 +178,11 @@
     });
 
     $('.edit_course').click(function() {
-        start_load();
+        _reset();
         var cat = $('#manage-course');
-        cat.get(0).reset();
         cat.find("[name='id']").val($(this).attr('data-id'));
         cat.find("[name='course']").val($(this).attr('data-course'));
         cat.find("[name='description']").val($(this).attr('data-description'));
-        end_load();
     });
 
     $('.delete_course').click(function() {

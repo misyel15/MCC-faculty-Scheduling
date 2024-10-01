@@ -1,7 +1,50 @@
+<?php
+session_start(); // Start the session
+include 'db_connect.php'; 
+
+// Check if the form was submitted via AJAX
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Extract the posted values
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Prepare and execute the login query
+    $stmt = $conn->prepare("
+        SELECT id, name, username, dept_id, type FROM users 
+        WHERE username = ? 
+        AND password = ?
+    ");
+    $hashed_password = md5($password); // Use md5 or a stronger hashing algorithm
+    $stmt->bind_param("ss", $username, $hashed_password);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user_data = $result->fetch_assoc();
+
+        // Store only necessary user information in the session
+        $_SESSION['user_id'] = $user_data['id'];
+        $_SESSION['dept_id'] = $user_data['dept_id'];
+        $_SESSION['username'] = $user_data['username'];
+        $_SESSION['name'] = $user_data['name'];
+        $_SESSION['login_type'] = $user_data['type']; // Store user type for permission checks
+       
+        // Additional check for user type (if not type 1, clear session and return error)
+        if ($_SESSION['login_type'] != 1) {
+            session_unset(); // Clear all session data
+            echo 2; // User is not allowed
+        } else {
+            echo 1; // Successful login
+        }
+    } else {
+        echo 3; // Invalid username/password
+    }
+    exit; // Exit after handling the AJAX request
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- Required meta tags-->
     <meta charset="UTF-8">
@@ -12,7 +55,7 @@
 
     <!-- Title Page-->
     <title>Login</title>
-    <link rel="icon" href="assets/uploads/back.png" type="image/png">
+    <link rel="icon" href="assets/uploads/mcclogo.jpg" type="image/jpg">
     <!-- Fontfaces CSS-->
     <link href="css/font-face.css" rel="stylesheet" media="all">
     <link href="vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
@@ -64,8 +107,7 @@
                     <div class="login-content">
                         <div class="login-logo">
                             <a href="#">
-                                <img src="assets/uploads/back.png" style="width:100px; heigth:100px;" alt="CoolAdmin">
-                         
+                                <img src="assets/uploads/mcclogo.jpg" style="width:150px; height:90px;" alt="CoolAdmin">
                             </a>
                             <h3> Welcome Admin</h3>
                         </div>
@@ -73,28 +115,41 @@
                             <form id="login-form">
                                 <div class="form-group">
                                     <label>Username</label>
-                                    <input class="au-input au-input--full" type="text" name="username" placeholder="Username" required>
+                                    <input class="au-input au-input--full" type="email" name="username" placeholder="Username" required>
                                 </div>
                                 <div class="form-group">
-    <label>Password</label>
-    <div class="password-container">
-        <input class="au-input au-input--full" type="password" id="password" name="password" placeholder="Password" required>
-        <i class="fas fa-eye-slash eye-icon" id="togglePassword"></i>
-    </div>
-</div>
-
+                                    <label>Password</label>
+                                    <div class="password-container">
+                                        <input class="au-input au-input--full" type="password" id="password" name="password" placeholder="Password" required>
+                                        <i class="fas fa-eye-slash eye-icon" id="togglePassword"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-13">
+                                        <label for="course" class="control-label">Department</label>
+                                        <select class="form-control" name="course" id="course" required>
+                                            <option value="0" disabled selected>Select Course</option>
+                                            <?php 
+                                            $sql = "SELECT * FROM users";
+                                            $query = $conn->query($sql);
+                                            while($row= $query->fetch_array()):
+                                                $course = $row['course'];
+                                            ?>
+                                            <option value="<?php echo  $course ?>"><?php echo ucwords($course) ?></option>
+                                            <?php endwhile; ?>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="login-checkbox">
                                     <label>
                                         <input type="checkbox" name="remember">Remember Me
                                     </label>
                                     <label>
-                                        <a href="forgotpassword.php">Forgotten Password?</a>
+                                        <a href="forgotpassword.php">Forgot Password?</a>
                                     </label>
-                                    
                                 </div>
-                                <button class="au-btn au-btn--block au-btn--blue m-b-20" type="submit">sign in</button>
+                                <button class="au-btn au-btn--block au-btn--blue m-b-20" type="submit">Login</button>
                             </form>
-                            
                         </div>
                     </div>
                 </div>
@@ -147,7 +202,7 @@
                 $(this).find('.alert-danger').remove();
             
             $.ajax({
-                url: 'ajax.php?action=login',
+                url: '', // No URL is needed here; we are submitting to the same page
                 method: 'POST',
                 data: $(this).serialize(),
                 error: function(err) {
@@ -169,10 +224,18 @@
                             text: 'Login successful. Redirecting...',
                             showConfirmButton: true
                         }).then(() => {
-                            location.href = 'index.php?page=home';
+                            location.href = 'home.php';
                         });
+                    } else if (resp == 2) {
+                        // Display SweetAlert error message for user type
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Access Denied',
+                            text: 'You do not have permission to access this area.'
+                        });
+                        $('#login-form button[type="submit"]').removeAttr('disabled').html('sign in');
                     } else {
-                        // Display SweetAlert error message
+                        // Display SweetAlert error message for incorrect login
                         Swal.fire({
                             icon: 'error',
                             title: 'Login Failed',
@@ -186,5 +249,4 @@
     });
     </script>
 </body>
-
 </html>

@@ -1,3 +1,14 @@
+<?php 
+include 'db_connect.php'; 
+
+
+// Check if the user is logged in and has a dept_id
+if (!isset($_SESSION['username']) || !isset($_SESSION['dept_id'])) {
+    header("Location: login.php"); // Redirect to login page if not logged in
+    exit();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +23,7 @@
 
     <!-- Title Page-->
     <title>Mcc Faculty Scheduling</title>
-    <link rel="icon" href="assets/uploads/back.png" type="image/png">
+    <link rel="icon" href="assets/uploads/mcclogo.jpg" type="image/png">
 
     <!-- Fontfaces CSS-->
     <link href="css/font-face.css" rel="stylesheet" media="all">
@@ -94,7 +105,7 @@
 /* Ensure image and content align properly */
 .image img {
     border-radius: 50%;
-    width: 40px;
+    width: 50px;
     height: 40px;
 }
 
@@ -108,7 +119,7 @@
                     <div class="header-mobile-inner">
                       <div>
                            
-                    <img src="assets/uploads/back.png"style="height: 50px; width: 50px;" alt="Mcc Faculty Scheduling"  />
+                    <img src="assets/uploads/mcclogo.jpg"style="height: 50px; width: 50px;" alt="Mcc Faculty Scheduling"  />
                     Mcc Faculty Scheduling
 </div>
                         <button class="hamburger hamburger--slider" type="button">
@@ -157,7 +168,7 @@
         <aside class="menu-sidebar d-none d-lg-block">
             <div class="logo">
                
-                    <img src="assets/uploads/back.png"style="height: 50px; width: 50px;" alt="Mcc Faculty Scheduling"  />
+                    <img src="assets/uploads/mcclogo.jpg"style="height: 50px; width: 50px;" alt="Mcc Faculty Scheduling"  />
                     Mcc Faculty Scheduling
                
             </div>
@@ -247,39 +258,36 @@
                                         </div>
                                     </div>
                                 </div>
-                         
-
-
-<div class="account-wrap float-right">
-    <div class="account-item clearfix js-item-menu">
-       
-        <div class="content">
-            <!-- Check if session variable is set before using it -->
-            
-    <i class="fas fa-user"></i> 
-    <?php echo isset($_SESSION['login_name']) ? $_SESSION['login_name'] : 'Administrator'; ?>
-</a>
-
-        </div>
-        <div class="account-dropdown js-dropdown">
-           
-                <div class="content">
-            
-    <div class="info clearfix" style="display: flex; align-items: center;">
-        <!-- User Icon -->
-        <i class="fas fa-user" style="font-size: 24px; margin-right: 10px;"></i> 
-        
-        <!-- User Info (Name and Email) -->
-        <div class="content">
-            <h5 class="name" style="font-size: 17px; margin-left: -20%;">
-                <?php echo isset($_SESSION['login_name']) ? $_SESSION['login_name'] : 'Administrator'; ?>
-            </h5>
-            <span class="email" style="font-size: 14px; color: #888;">
-                <?php echo isset($_SESSION['login_email']) ? $_SESSION['login_email'] : ''; ?>
-            </span>
-        </div>
-    </div>
-</div>
+                                <div class="account-wrap float-right">
+                                    <div class="account-item clearfix js-item-menu">
+                                       
+                                        <div class="content">
+                                            <!-- Check if session variable is set before using it -->
+                                            
+                                    <i class="fas fa-user"></i> 
+                                    <?php echo $_SESSION['name']; ?>
+                                </a>
+                                
+                                        </div>
+                                        <div class="account-dropdown js-dropdown">
+                                           
+                                                <div class="content">
+                                            
+                                    <div class="info clearfix" style="display: flex; align-items: center;">
+                                        <!-- User Icon -->
+                                        <i class="fas fa-user" style="font-size: 24px; margin-right: 10px;"></i> 
+                                        
+                                        <!-- User Info (Name and Email) -->
+                                        <div class="content">
+                                            <h5 class="name" style="font-size: 17px; margin-left: -20%;">
+                                            <?php echo $_SESSION['name']; ?>
+                                            </h5>
+                                            <span class="email" style="font-size: 14px; color: #888;">
+                                                <?php echo isset($_SESSION['login_email']) ? $_SESSION['login_email'] : ''; ?>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
 
        
             <div class="account-dropdown__footer">

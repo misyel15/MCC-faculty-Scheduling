@@ -1,88 +1,56 @@
 <?php
 session_start();
 ini_set('display_errors', 1);
-Class Action {
-	private $db;
 
-	public function __construct() {
-		ob_start();
-   	include 'db_connect.php';
-    
-    $this->db = $conn;
-	}
-	function __destruct() {
-	    $this->db->close();
-	    ob_end_flush();
-	}
+class Action {
+    private $db;
 
-	function login(){
-		
-			extract($_POST);		
-			$qry = $this->db->query("SELECT * FROM users where username = '".$username."' and password = '".md5($password)."' ");
-			if($qry->num_rows > 0){
-				foreach ($qry->fetch_array() as $key => $value) {
-					if($key != 'password' && !is_numeric($key))
-						$_SESSION['login_'.$key] = $value;
+    public function __construct() {
+        ob_start();
+        include 'db_connect.php'; // Ensure db_connect.php contains your database connection logic
+        $this->db = $conn;
+    }
+
+    function __destruct() {
+        $this->db->close();
+        ob_end_flush();
+    }
+	
+	
+
+	function login_faculty() {
+		// Start the session if not already started
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
+	
+		// Extract POST variables
+		extract($_POST);
+	
+		// Prepare the SQL statement to prevent SQL injection
+		$stmt = $this->db->prepare("SELECT *, CONCAT(lastname, ', ', firstname, ' ', middlename) AS name FROM faculty WHERE id_no = ?");
+		$stmt->bind_param("s", $id_no);  // "s" indicates that the parameter is a string
+		$stmt->execute();
+	
+		// Get the result
+		$result = $stmt->get_result();
+	
+		if ($result->num_rows > 0) {
+			// Fetch the user data
+			$user_data = $result->fetch_assoc();
+			
+			// Store relevant user data in the session
+			foreach ($user_data as $key => $value) {
+				if ($key != 'password' && !is_numeric($key)) {
+					$_SESSION['login_' . $key] = $value;
 				}
-				if($_SESSION['login_type'] != 1){
-					foreach ($_SESSION as $key => $value) {
-						unset($_SESSION[$key]);
-					}
-					return 2 ;
-					exit;
-				}
-					return 1;
-			}else{
-				return 3;
 			}
+			return 1;  // Successful login
+		} else {
+			return 3;  // Invalid ID number
+		}
 	}
 	
-	function login_faculty(){
-		
-		extract($_POST);		
-		$qry = $this->db->query("SELECT *,concat(lastname,', ',firstname,' ',middlename) as name FROM faculty where id_no = '".$id_no."' ");
-		if($qry->num_rows > 0){
-			foreach ($qry->fetch_array() as $key => $value) {
-				if($key != 'password' && !is_numeric($key))
-					$_SESSION['login_'.$key] = $value;
-			}
-			return 1;
-		}else{
-			return 3;
-		}
-}
-	function login2(){
-		
-			extract($_POST);
-			if(isset($email))
-				$username = $email;
-		$qry = $this->db->query("SELECT * FROM users where username = '".$username."' and password = '".md5($password)."' ");
-		if($qry->num_rows > 0){
-			foreach ($qry->fetch_array() as $key => $value) {
-				if($key != 'passwors' && !is_numeric($key))
-					$_SESSION['login_'.$key] = $value;
-			}
-			if($_SESSION['login_alumnus_id'] > 0){
-				$bio = $this->db->query("SELECT * FROM alumnus_bio where id = ".$_SESSION['login_alumnus_id']);
-				if($bio->num_rows > 0){
-					foreach ($bio->fetch_array() as $key => $value) {
-						if($key != 'passwors' && !is_numeric($key))
-							$_SESSION['bio'][$key] = $value;
-					}
-				}
-			}
-			if($_SESSION['bio']['status'] != 1){
-					foreach ($_SESSION as $key => $value) {
-						unset($_SESSION[$key]);
-					}
-					return 2 ;
-					exit;
-				}
-				return 1;
-		}else{
-			return 3;
-		}
-	}
 	function logout(){
 		session_destroy();
 		foreach ($_SESSION as $key => $value) {
@@ -104,6 +72,8 @@ Class Action {
 		$data .= ", username = '$username' ";
 		if(!empty($password))
 		$data .= ", password = '".md5($password)."' ";
+		$data .= ", email = '$email' ";
+		$data .= ", course = '$course' ";
 		$data .= ", type = '$type' ";
 		if($type == 1)
 			$establishment_id = 0;
@@ -218,6 +188,7 @@ Class Action {
 					$data .= ", cover_img = '$fname' ";
 
 		}
+		
 		
 		// echo "INSERT INTO system_settings set ".$data;
 		$chk = $this->db->query("SELECT * FROM system_settings");

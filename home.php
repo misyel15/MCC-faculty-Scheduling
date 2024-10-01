@@ -41,6 +41,7 @@
     color: white;
     font-size: 0.9rem;
     font-weight: bold;
+    height: 30%;
   }
 </style>
 
@@ -53,9 +54,6 @@
 </a>
 
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
    
   </nav>
 

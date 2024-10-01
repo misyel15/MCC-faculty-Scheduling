@@ -1,10 +1,11 @@
 <?php
 session_start();
 include("db_connect.php");
-
+include 'includes/style.php'; 
+include 'includes/head.php'; 
 
 // Ensure that the token is retrieved from the URL or session
-if (isset($_GET['token'])) {
+if (isset($_GET['token'])) {         
     $_SESSION['token'] = $_GET['token'];
 } elseif (!isset($_SESSION['token'])) {
     echo '<script>
@@ -96,80 +97,77 @@ if (isset($_POST['submit'])) {
 ?>
 
 
-
-
-
-
-
-
-
-    <style>
-     
-      #logo-img{
-          width:5em;
-          height:5em;
-          object-fit:scale-down;
-          object-position:center center;
-      }
-    
-  </style>
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin | Forgot Password</title>
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script src="../admin/js/sweetalert2@10.js"></script>
-  <!-- Google Font: Source Sans Pro -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- icheck bootstrap -->
   <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <style>
+    #logo-img {
+        width: 5em;
+        height: 5em;
+        object-fit: scale-down;
+        object-position: center center;
+    }
+    .login-box {
+        max-width: 360px;
+        margin: 0 auto;
+        margin-top: 10% ;
+    }
+    .card {
+        border-radius: 10px;
+    }
+    .btn-primary {
+        background-color: #9900ff;
+        border-radius: 10px;
+    }
+    .input-group-append button {
+        border-radius: 0 5px 5px 0;
+    }
+    .toggle-icon {
+        cursor: pointer;
+    }
+  </style>
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="card card-outline card-primary">
     <div class="card-header text-center">
-         <center><img src="images/NHA.png" alt="System Logo" class="img-thumbnail rounded-circle" id="logo-img"></center>
-      <a class="h1"><b>Reset Password</b></a>
+      <img src="assets/uploads/back.png" alt="System Logo" class="img-thumbnail rounded-circle" id="logo-img">
+      <a class="h2"><b>Reset Password</b></a>
     </div>
     <div class="card-body">
-      <!-- <p class="login-box-msg">You forgot your password? Here you can easily retrieve a new password.</p> -->
-      
-<form action="reset_password.php" method="post">
-    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+      <form action="reset_password.php" method="post">
+        <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 
-    <div class="input-group mb-3">
-        <input type="password" class="form-control" autocomplete="off" name="password" id="password" placeholder="New Password" required>
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" id="oldPasswordToggle">
-                <i class="fas fa-eye toggle-icon"></i>
-            </button>
+        <div class="input-group mb-3">
+            <input type="password" class="form-control" autocomplete="off" name="password" id="password" placeholder="New Password" required>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="oldPasswordToggle">
+                    <i class="fas fa-eye toggle-icon"></i>
+                </button>
+            </div>
         </div>
-    </div>
-    <div class="input-group mb-3">
-        <input type="password" class="form-control" autocomplete="off" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" id="confirmPasswordToggle">
-                <i class="fas fa-eye toggle-icon"></i>
-            </button>
+        <div class="input-group mb-3">
+            <input type="password" class="form-control" autocomplete="off" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="confirmPasswordToggle">
+                    <i class="fas fa-eye toggle-icon"></i>
+                </button>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <button type="submit" name="submit" class="btn btn-primary btn-block" style="background-color: #9900ff; border-radius: 10px;">Submit</button>
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" name="submit" class="btn btn-primary btn-block">Submit</button>
+            </div>
         </div>
-    </div>
-</form>
-    
+      </form>
     </div>
     <!-- /.login-card-body -->
   </div>

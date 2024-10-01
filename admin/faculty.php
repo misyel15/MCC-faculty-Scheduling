@@ -1,6 +1,11 @@
-<?php include('db_connect.php');?>
-<?php include 'includes/header.php'; ?>
+<?php
+session_start(); // Start the session
+include('db_connect.php');
+include 'includes/header.php';
 
+// Assuming the user department ID is stored in the session after login
+$dept_id = isset($_SESSION['dept_id']) ? $_SESSION['dept_id'] : null;
+?>
 <!-- Include SweetAlert CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
@@ -82,7 +87,7 @@
                                 <tbody>
                                     <?php 
                                     $i = 1;
-                                    $faculty = $conn->query("SELECT *, concat(lastname, ', ', firstname, ' ', middlename) as name FROM faculty ORDER BY concat(lastname, ', ', firstname, ' ', middlename) ASC");
+                                    $faculty = $conn->query("SELECT *, concat(lastname, ', ', firstname, ' ', middlename) as name FROM faculty WHERE dept_id = '$dept_id' ORDER BY concat(lastname, ', ', firstname, ' ', middlename) ASC");
                                     while($row=$faculty->fetch_assoc()):
                                     ?>
                                     <tr>

@@ -15,7 +15,7 @@ if (isset($_POST['room_id'])) {
         $output = '';
         while ($row = $result->fetch_assoc()) {
             $time = htmlspecialchars($row['timeslot']);
-            $monday = isset($row['Monday']) ? htmlspecialchars($row['Monday']) : '';
+            $monday = isset($row['course']) ? htmlspecialchars($row['course']) : '';
             $tuesday = isset($row['Tuesday']) ? htmlspecialchars($row['Tuesday']) : '';
             $wednesday = isset($row['Wednesday']) ? htmlspecialchars($row['Wednesday']) : '';
             $thursday = isset($row['Thursday']) ? htmlspecialchars($row['Thursday']) : '';
@@ -42,7 +42,15 @@ if (isset($_POST['room_id'])) {
 }
 ?>
 
-<?php include 'includes/header.php'; ?>
+<?php
+session_start();
+include('db_connect.php');
+include 'includes/header.php';
+
+// Assuming you store the department ID in the session during login
+// Example: $_SESSION['dept_id'] = $user['dept_id'];
+$dept_id = $_SESSION['dept_id']; // Get the department ID from the session
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

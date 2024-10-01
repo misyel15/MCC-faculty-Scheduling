@@ -1,5 +1,12 @@
-<?php include('db_connect.php'); ?>
-<?php include 'includes/header.php'; ?>
+<?php
+session_start(); // Start the session
+include('db_connect.php');
+include 'includes/header.php';
+
+// Assuming the user department ID is stored in the session after login
+$dept_id = isset($_SESSION['dept_id']) ? $_SESSION['dept_id'] : null;
+?>
+
 
 <!-- Include SweetAlert CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -73,10 +80,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
-                                $room = $conn->query("SELECT * FROM roomlist ORDER BY id ASC");
-                                while ($row = $room->fetch_assoc()):
-                                ?>
+                            <?php 
+                                    $i = 1;
+                                    $course = $conn->query("SELECT * FROM roomlist WHERE dept_id = '$dept_id' ORDER BY id ASC");
+                                    while($row = $course->fetch_assoc()):
+                                    ?>
                                 <tr>
                                     <td class="text-center"><?php echo $row['room_id']; ?></td>
                                     <td>
